@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "@fontsource/cormorant-garamond/600.css";
+@import "@fontsource/source-sans-3/400.css";
+@import "@fontsource/source-sans-3/600.css";
+
+/* Tokens from DESIGN.md */
+@theme {
+  --color-sky: #e4eff7;
+  --color-pine: #1e4636;
+  --color-pine-dark: #163427;
+  --color-brass: #8a6421;
+  --color-ink: #1b2a2f;
+  --color-muted: #4a5a60;
+  --color-line: #c9d8e2;
+  --color-danger: #9b2c2c;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Source Sans 3", system-ui, sans-serif;
+  --radius-control: 6px;
+  --radius-card: 12px;
+}
+
+@layer base {
+  body {
+    @apply bg-sky font-sans text-ink antialiased;
+  }
+  h1, h2, h3 {
+    @apply font-serif font-semibold text-pine;
+  }
+  a[href], button:not(:disabled), summary, select, label[for], input[type="radio"], input[type="checkbox"] {
+    cursor: pointer;
+  }
+  button:disabled, input:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-brass);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+    }
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-[var(--radius-card)] border border-line bg-white;
+  }
+  .field-label {
+    @apply mb-1 block text-sm font-semibold text-ink;
+  }
+  .input {
+    @apply min-h-11 w-full rounded-[var(--radius-control)] border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-muted;
+  }
+  .btn-primary,
+  .btn-quiet,
+  .btn-danger {
+    @apply inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] px-4 py-2 font-semibold transition-colors disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply bg-pine text-white hover:bg-pine-dark active:bg-ink;
+  }
+  .btn-quiet {
+    @apply border border-line bg-white text-pine hover:border-pine active:bg-sky;
+  }
+  .btn-danger {
+    @apply border border-danger bg-white text-danger hover:bg-danger hover:text-white;
+  }
+  /* The place card: reservation code between dotted brass rules (DESIGN.md identity motif). */
+  .place-card {
+    @apply border-y-2 border-dotted border-brass py-2 text-center font-serif tracking-wide text-pine;
+  }
+}
