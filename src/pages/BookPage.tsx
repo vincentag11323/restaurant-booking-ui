@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ErrorBanner, PageTitle } from "../components/ui";
-import { api, json } from "../lib/api";
+import { api, json } from "../backend-api/client";
 import { BRANCH_LABEL, SECTOR_LABEL, addDays, formatSlot, localDateKey } from "../lib/format";
 import type { Branch, Reservation, Sector, Slot, SlotStartTime } from "../types/api";
 

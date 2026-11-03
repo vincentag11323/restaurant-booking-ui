@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Dialog } from "../components/Dialog";
 import { ErrorBanner, PageTitle, PlaceCard, StatusBadge } from "../components/ui";
-import { api, json } from "../lib/api";
+import { api, json } from "../backend-api/client";
 import { BRANCH_LABEL, SECTOR_LABEL, addDays, formatSlot, localDateKey, localTime, tableSummary } from "../lib/format";
 import { type Reservation, SLOT_START_TIMES, type SlotStartTime } from "../types/api";
 

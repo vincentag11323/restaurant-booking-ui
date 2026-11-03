@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { Dialog } from "../../components/Dialog";
 import { ErrorBanner, PageTitle, PlaceCard, StatusBadge } from "../../components/ui";
-import { api, request } from "../../lib/api";
+import { api, request } from "../../backend-api/client";
 import { BRANCH_LABEL, SECTOR_LABEL, formatSlot, formatStamp, tableSummary } from "../../lib/format";
 import type { AdminReservation, AdminReservationPage } from "../../types/api";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
 import { ErrorBanner, PlaceCard } from "../components/ui";
-import { api } from "../lib/api";
+import { api } from "../backend-api/client";
 import { BRANCH_LABEL, SECTOR_LABEL, formatSlot, tableSummary } from "../lib/format";
 import type { Reservation } from "../types/api";
 

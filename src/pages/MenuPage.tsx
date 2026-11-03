@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { ErrorBanner, PageTitle } from "../components/ui";
-import { api } from "../lib/api";
+import { api } from "../backend-api/client";
 import { formatPrice } from "../lib/format";
 import type { MenuItem, MenuType } from "../types/api";
 

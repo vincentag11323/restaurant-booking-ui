@@ -21,10 +21,12 @@ export function Layout() {
         ? [
             { to: "/", label: "Reserve" },
             { to: "/bookings", label: "Bookings" },
+            { to: "/chat", label: "Ask" },
             { to: "/menu", label: "Menu" },
             { to: "/profile", label: "Profile" },
           ]
         : [
+            { to: "/chat", label: "Ask" },
             { to: "/menu", label: "Menu" },
             { to: "/login", label: "Sign in" },
           ];

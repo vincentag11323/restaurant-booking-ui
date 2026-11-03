@@ -6,6 +6,7 @@ import type { Role } from "./types/api";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminLogsPage } from "./pages/admin/AdminLogsPage";
 import { BookPage } from "./pages/BookPage";
+import { ChatPage } from "./pages/ChatPage";
 import { ConfirmationPage } from "./pages/ConfirmationPage";
 import { LoginPage } from "./pages/LoginPage";
 import { MenuPage } from "./pages/MenuPage";
@@ -37,6 +38,7 @@ export function App() {
         <Route path="/login" element={<GuestOnly><LoginPage /></GuestOnly>} />
         <Route path="/register" element={<GuestOnly><RegisterPage /></GuestOnly>} />
         <Route path="/menu" element={<MenuPage />} />
+        <Route path="/chat" element={<ChatPage />} />
         <Route path="/" element={<RequireRole role="USER"><BookPage /></RequireRole>} />
         <Route path="/bookings" element={<RequireRole role="USER"><MyBookingsPage /></RequireRole>} />
         <Route path="/bookings/:id/confirmed" element={<RequireRole role="USER"><ConfirmationPage /></RequireRole>} />

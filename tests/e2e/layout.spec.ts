@@ -8,6 +8,7 @@ const screens = [
   { path: "/login", as: null },
   { path: "/register", as: null },
   { path: "/menu", as: GUEST },
+  { path: "/chat", as: null },
   { path: "/", as: GUEST },
   { path: "/bookings", as: GUEST },
   { path: "/profile", as: GUEST },

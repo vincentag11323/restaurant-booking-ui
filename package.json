@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "playwright test",
-    "preview:test": "npm run build && API_PROXY_TARGET=http://localhost:4400 vite preview --port 5190 --strictPort"
+    "preview:test": "npm run build && API_PROXY_TARGET=http://localhost:4400 AGENT_PROXY_TARGET=http://localhost:4500 vite preview --port 5190 --strictPort"
   },
   "license": "UNLICENSED",
   "type": "module",
