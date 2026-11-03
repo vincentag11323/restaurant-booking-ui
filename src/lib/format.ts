@@ -18,6 +18,11 @@ export function formatSlot(slotStart: string, slotEnd: string): string {
   return `${dayFormat.format(start)}, ${timeFormat.format(start)} – ${timeFormat.format(new Date(slotEnd))}`;
 }
 
+/** Restaurant-local "HH:MM" of a moment, e.g. a slot start. */
+export function localTime(iso: string): string {
+  return timeFormat.format(new Date(iso));
+}
+
 export function formatStamp(iso: string): string {
   return stampFormat.format(new Date(iso));
 }
