@@ -53,7 +53,10 @@ export function AdminDashboardPage() {
               {stats.totalCovers} <span className="text-xl font-normal text-muted">guests expected</span>
             </p>
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
-              <p data-testid="stat-bookings"><span className="text-2xl font-semibold">{stats.totalBookings}</span> active bookings</p>
+              <p data-testid="stat-bookings">
+                <span className="text-2xl font-semibold">{stats.totalBookings}</span> active bookings
+                {stats.agentBookings > 0 && <span className="block text-sm text-muted">of which {stats.agentBookings} via AI assistant</span>}
+              </p>
               <p data-testid="stat-cancellations"><span className="text-2xl font-semibold">{stats.cancellations}</span> cancelled</p>
             </div>
             {stats.totalBookings === 0 && <p className="mt-4 text-muted">No bookings for this day yet.</p>}

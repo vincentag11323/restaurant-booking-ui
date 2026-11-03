@@ -42,6 +42,7 @@ export function makeReservation(overrides: Partial<Reservation> = {}): Reservati
     partySize: 4,
     specialRequests: null,
     status: "CONFIRMED",
+    source: "APP",
     tableIds: ["B1-MH-01", "B1-MH-02"],
     createdAt: "2029-12-20T03:00:00.000Z",
     updatedAt: "2029-12-20T03:00:00.000Z",
@@ -172,6 +173,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
         return reply(route, 200, {
           date: url.searchParams.get("date"),
           totalBookings: 2,
+          agentBookings: 1,
           totalCovers: 9,
           cancellations: 1,
           utilization: [
@@ -187,7 +189,8 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
         }
         const q = url.searchParams.get("q")?.toLowerCase();
         const status = url.searchParams.get("status");
-        const matches = state.adminRows.filter((r) => (!status || r.status === status) && (!q || r.code.toLowerCase() === q || r.customer.name.toLowerCase().includes(q)));
+        const source = url.searchParams.get("source");
+        const matches = state.adminRows.filter((r) => (!status || r.status === status) && (!source || r.source === source) && (!q || r.code.toLowerCase() === q || r.customer.name.toLowerCase().includes(q)));
         const page = Number(url.searchParams.get("page") ?? 1);
         const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
         return reply(route, 200, { items: matches.slice((page - 1) * pageSize, page * pageSize), total: matches.length, page, pageSize });

@@ -6,7 +6,7 @@ import { BRANCH_LABEL, SECTOR_LABEL, formatSlot, formatStamp, tableSummary } fro
 import type { AdminReservation, AdminReservationPage } from "../../types/api";
 
 const PAGE_SIZE = 20;
-const FILTER_KEYS = ["branch", "sector", "status", "from", "to", "q"] as const;
+const FILTER_KEYS = ["branch", "sector", "status", "source", "from", "to", "q"] as const;
 
 function toQuery(form: FormData): URLSearchParams {
   const params = new URLSearchParams();
@@ -38,6 +38,7 @@ function Detail({ row, onClose }: { row: AdminReservation; onClose: () => void }
     ["Booked at", formatStamp(row.createdAt)],
     ...(row.cancelledAt ? [["Cancelled at", formatStamp(row.cancelledAt)] as [string, string]] : []),
     ["Notes", row.specialRequests ?? "None"],
+    ["Booked by", row.source === "AGENT" ? `AI assistant, on behalf of ${row.customer.email}` : "Guest, in the app"],
   ];
   return (
     <Dialog title={row.code} open onClose={onClose}>
@@ -125,6 +126,14 @@ export function AdminLogsPage() {
             <option value="NO_SHOW">No-show</option>
           </select>
         </div>
+        <div className="col-span-2">
+          <label htmlFor="source" className="field-label">Booked by</label>
+          <select id="source" name="source" className="input">
+            <option value="">Anyone</option>
+            <option value="APP">Guest, in the app</option>
+            <option value="AGENT">AI assistant</option>
+          </select>
+        </div>
         <div>
           <label htmlFor="from" className="field-label">From</label>
           <input id="from" name="from" type="date" className="input" />
@@ -155,6 +164,7 @@ export function AdminLogsPage() {
                 <StatusBadge status={row.status} />
               </div>
               <p className="font-semibold">{row.customer.name}</p>
+              {row.source === "AGENT" && <p className="text-sm font-semibold text-pine">Booked by AI assistant</p>}
               <p className="text-sm">{formatSlot(row.slotStart, row.slotEnd)}</p>
               <p className="text-sm text-muted">
                 {BRANCH_LABEL[row.branch]}, {SECTOR_LABEL[row.sector]} · {row.partySize} {row.partySize === 1 ? "guest" : "guests"}
