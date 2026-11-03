@@ -43,4 +43,4 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so 
 VITE_API_URL=https://api.example.com npm run build   # static files in dist/
 ```
 
-The API's `CORS_ORIGIN` must match the site's origin, and both must be served over HTTPS for the refresh cookie.
+The API's `CORS_ORIGIN` must match the site's origin, and both must be served over HTTPS. The refresh cookie is `SameSite=Lax`, so host the app and API on the same site (e.g. `app.example.com` and `api.example.com`), or serve the API under the app's own `/api` path.
