@@ -7,7 +7,8 @@ const dayFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, weekda
 const timeFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 const dateKeyFormat = new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" });
 const stampFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, dateStyle: "medium", timeStyle: "short" });
-const priceFormat = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 });
+// Grouping only: currency style output differs by engine (Safari drops the space), so "Rp " is added here.
+const priceFormat = new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 });
 
 export const BRANCH_LABEL: Record<Branch, string> = { BRANCH_1: "Branch 1", BRANCH_2: "Branch 2" };
 export const SECTOR_LABEL: Record<Sector, string> = { MAIN_HALL: "Main Dining Hall", VIP_WING: "VIP Private Dining" };
@@ -38,7 +39,7 @@ export function addDays(dateKey: string, days: number): string {
 }
 
 export function formatPrice(priceCents: number): string {
-  return priceFormat.format(priceCents / 100);
+  return `Rp ${priceFormat.format(priceCents / 100)}`;
 }
 
 export function tableSummary(sector: Sector, tableIds: string[]): string {
