@@ -1,10 +1,10 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { api, json, refreshSession, setAccessToken, setSessionExpiredHandler } from "../backend-api/client";
+import { api, json, setSessionExpiredHandler } from "../backend-api/client";
 import type { AuthResponse, User } from "../types/api";
 
 interface AuthState {
   user: User | null;
-  /** True until the refresh cookie has been tried on first load. */
+  /** True until the page-load session check (GET /me) has answered. */
   restoring: boolean;
   login: (email: string, password: string) => Promise<User>;
   register: (input: { name: string; email: string; password: string; phone?: string }) => Promise<User>;
@@ -19,19 +19,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [restoring, setRestoring] = useState(true);
 
   const signOutLocally = useCallback(() => {
-    setAccessToken(null);
     setUser(null);
   }, []);
 
   useEffect(() => {
     setSessionExpiredHandler(signOutLocally);
-    refreshSession()
-      .then((session) => setUser(session?.user ?? null))
+    // The session is an HttpOnly cookie the app can't read, so ask the API who is signed in.
+    api<User>("/me")
+      .then(setUser, () => setUser(null))
       .finally(() => setRestoring(false));
   }, [signOutLocally]);
 
   const startSession = useCallback((session: AuthResponse) => {
-    setAccessToken(session.accessToken);
     setUser(session.user);
     return session.user;
   }, []);

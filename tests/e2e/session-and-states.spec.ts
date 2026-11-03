@@ -6,21 +6,27 @@ const upcoming = makeReservation({ id: "r-up", code: "RSV-UPC0M1", ...slotTimes(
 
 test.describe("session", () => {
   test("a signed-in guest stays signed in after a reload", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST });
+    const api = await mockApi(page, { signedInAs: GUEST });
     await page.goto("/profile");
     await page.reload();
     await expect(page.getByLabel("Full name")).toHaveValue(GUEST.name);
+    expect(api.sessionChecks).toBeGreaterThan(0);
+    expect(api.authorizationHeaders).toEqual([]);
   });
 
-  test("an expired access token is refreshed and the request retried", async ({ page }) => {
-    const api = await mockApi(page, { signedInAs: GUEST, reservations: [upcoming], expiredToken: true });
-    await page.goto("/bookings");
-    await expect(page.getByText("RSV-UPC0M1")).toBeVisible();
-    expect(api.refreshCalls).toBe(2);
+  test("when the session has ended, the screen keeps what it shows and the next server call sends the guest to sign in", async ({ page }) => {
+    const api = await mockApi(page, { signedInAs: GUEST });
+    await page.goto("/profile");
+    await expect(page.getByLabel("Full name")).toHaveValue(GUEST.name);
+    api.sessionEnded = true;
+    await expect(page.getByLabel("Full name")).toHaveValue(GUEST.name);
+    await expect(page).toHaveURL(/\/profile$/);
+    await page.getByRole("button", { name: "Save profile" }).click();
+    await expect(page).toHaveURL(/\/login$/);
   });
 
-  test("when the refresh also fails the guest is sent to sign in", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST, expiredToken: true, refreshFailsLater: true });
+  test("without a session, the page-load check sends the guest to sign in", async ({ page }) => {
+    await mockApi(page);
     await page.goto("/bookings");
     await expect(page).toHaveURL(/\/login$/);
   });
@@ -80,7 +86,7 @@ test.describe("error states name the problem", () => {
   });
 
   test("profile save fails", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST, failPaths: ["/me"] });
+    await mockApi(page, { signedInAs: GUEST, failPaths: ["PATCH /me"] });
     await page.goto("/profile");
     await page.getByRole("button", { name: "Save profile" }).click();
     await expect(page.getByRole("alert")).toHaveText("Internal server error");

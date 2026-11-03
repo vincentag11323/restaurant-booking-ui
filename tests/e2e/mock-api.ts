@@ -61,12 +61,8 @@ interface MockOptions {
   rejectCapacityAt?: string;
   /** Delay (ms) for admin log responses filtered by this status, to simulate a slow query */
   slowStatus?: { status: string; ms: number };
-  /** API paths (without /api) that answer 500 */
+  /** API paths (without /api) that answer 500; prefix a method ("PATCH /me") to fail only that method */
   failPaths?: string[];
-  /** First token is already expired: authed calls with it get 401 until /auth/refresh issues a fresh one */
-  expiredToken?: boolean;
-  /** /auth/refresh fails after the first (page-load) call */
-  refreshFailsLater?: boolean;
 }
 
 export async function mockApi(page: Page, options: MockOptions = {}) {
@@ -76,8 +72,12 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     adminRows: options.adminRows ?? [],
     adminQueries: [] as URLSearchParams[],
     created: [] as Record<string, unknown>[],
-    refreshCalls: 0,
-    token: options.expiredToken ? "stale-token" : "token",
+    /** Set true mid-test: the session cookie has ended, so authed calls get 401. */
+    sessionEnded: false,
+    /** Every Authorization header the app sent (it should send none: the session is a cookie). */
+    authorizationHeaders: [] as string[],
+    /** How many times the app asked GET /me (the page-load session check). */
+    sessionChecks: 0,
   };
   let nextId = 100;
 
@@ -90,15 +90,12 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     const path = url.pathname.replace(/^\/api/, "");
     const method = req.method();
     const body = req.postDataJSON?.() ?? null;
-    const session = () => ({ accessToken: state.token, user: state.user });
+    const session = () => ({ user: state.user });
+    const authorization = req.headers().authorization;
+    if (authorization) state.authorizationHeaders.push(authorization);
+    if (path === "/me" && method === "GET") state.sessionChecks++;
 
-    if (options.failPaths?.includes(path)) return reply(route, 500, { message: "Internal server error" });
-    if (path === "/auth/refresh") {
-      state.refreshCalls++;
-      if (!state.user || (options.refreshFailsLater && state.refreshCalls > 1)) return reply(route, 401, { message: "Invalid or expired refresh token" });
-      if (state.refreshCalls > 1) state.token = "fresh-token";
-      return reply(route, 200, session());
-    }
+    if (options.failPaths?.some((p) => p === path || p === `${method} ${path}`)) return reply(route, 500, { message: "Internal server error" });
     if (path === "/auth/logout") {
       state.user = null;
       return reply(route, 200, { message: "Logged out" });
@@ -128,7 +125,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     }
 
     if (!state.user) return reply(route, 401, { message: "Authentication required" });
-    if (req.headers().authorization === "Bearer stale-token") return reply(route, 401, { message: "Invalid or expired token" });
+    if (state.sessionEnded) return reply(route, 401, { message: "Invalid or expired token" });
 
     if (path === "/me") {
       if (method === "PATCH") state.user = { ...state.user, ...body };
