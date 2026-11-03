@@ -24,7 +24,10 @@ export function Dialog({ title, open, onClose, children }: { title: string; open
     >
       {open && (
         <div className="space-y-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          <h2 id={titleId} className="text-3xl">{title}</h2>
+          {/* Focus starts on the title, so long sheets open at the top and screen readers announce them. */}
+          <h2 id={titleId} className="text-3xl focus:outline-none" tabIndex={-1} autoFocus>
+            {title}
+          </h2>
           {children}
         </div>
       )}

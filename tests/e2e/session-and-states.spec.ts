@@ -184,6 +184,8 @@ test.describe("admin extras", () => {
     await page.goto("/admin/logs");
     await page.getByRole("button", { name: "View RSV-CXL999" }).click();
     const drawer = page.getByRole("dialog", { name: "RSV-CXL999" });
+    await expect(drawer.getByRole("heading", { name: "RSV-CXL999" })).toBeInViewport();
+    await expect(drawer.getByRole("heading", { name: "RSV-CXL999" })).toBeFocused();
     await expect(drawer.getByText("Cancelled at")).toBeVisible();
     await expect(drawer.getByText("Not given")).toBeVisible();
     await drawer.getByRole("button", { name: "Close" }).click();
