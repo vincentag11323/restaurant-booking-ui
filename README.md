@@ -1,8 +1,8 @@
 # resortos-booking-web
 
-Web app for the ResortOS restaurants: guests reserve and manage tables, admins read the booking log. One React app, role-based routes.
+Mobile-first PWA for the ResortOS restaurants: guests reserve and manage tables, admins read the booking log. One React app, role-based routes, installable to the home screen.
 
-React 19 · Vite · TypeScript · Tailwind CSS 4 · React Router · Playwright
+React 19 · Vite · vite-plugin-pwa · TypeScript · Tailwind CSS 4 · React Router · Playwright
 
 Specs live in the planning repo (`../requirements/`): `ui_spec.md` (screens), `api_spec.md` (the API this app calls). Visual direction is in [DESIGN.md](DESIGN.md).
 
@@ -21,11 +21,18 @@ Sign in as the seeded admin (`ADMIN_EMAIL` / `ADMIN_PASSWORD` from the API's `.e
 
 ```bash
 npx playwright install chromium   # first time only
-npm test               # UI suite on a desktop and a phone viewport
+npm test               # builds, serves the production build, runs the UI suite on a Pixel 7 viewport
 npm run typecheck
 ```
 
-UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so they need no backend. The API's own suite verifies the real endpoints against the same spec.
+UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so they need no backend. The API's own suite verifies the real endpoints against the same spec. Service workers are blocked in tests except in `pwa.spec.ts`, which checks the manifest, icons, service worker and offline start.
+
+## PWA
+
+* `vite-plugin-pwa` generates the manifest and service worker at build time (`npm run build`). Icons come from `public/favicon.svg` (a placeholder, see DESIGN.md).
+* The service worker precaches the app shell only. `/api` is never cached, so bookings and availability are always live. Without a network, the app still opens and API errors say the guest is offline.
+* Try it: `npm run build && npx vite preview`, open http://localhost:4173 in Chrome, then use Install. On iPhone, use Safari's Share → Add to Home Screen. Installing needs HTTPS in production (localhost is exempt).
+* The service worker is not active in `npm run dev`.
 
 ## Layout
 

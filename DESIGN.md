@@ -2,7 +2,7 @@
 
 Direction from the product owner (2026-11-03): **warm fine dining, on a friendly light blue background.**
 
-Design Read: booking web app for resort restaurant guests and floor staff, warm fine-dining language on a friendly light blue ground.
+Design Read: mobile-only booking PWA for resort restaurant guests and floor staff, warm fine-dining language on a friendly light blue ground.
 Dial: ENERGY 2 / RHYTHM 2 / MOTION 1
 
 ## Palette (2 core + 1 accent, plus neutrals)
@@ -26,6 +26,15 @@ Contrast (WCAG AA, computed with the WCAG 2 luminance formula): ink on sky 12.7:
 * Shadow: only on things that float above the page (detail drawer, dialogs). Cards sit flat with a 1px border.
 * Motion: hover and focus states only (MOTION 1). Respect `prefers-reduced-motion`.
 * Theme: light only. The owner-specified light blue ground is the brand. There is no dark theme to ship.
+
+## Layout (mobile only, 2026-11-03)
+* One column, max 28rem, centred on larger screens. No desktop variants.
+* Bottom tab bar (thumb reach): guests get Reserve, Bookings, Menu, Profile. Admins get Today and Booking log, with Sign out in the header.
+* Dialogs are bottom sheets that open with focus on their title.
+* Safe-area insets respected (`viewport-fit=cover`).
+
+## App icon
+**PLACEHOLDER.** `public/favicon.svg` is the place-card motif on pine with no lettering. It is not a logo. Replace it with the real ResortOS logo (512×512 SVG, key shapes inside the centre 80% for maskable crops), and the build regenerates every icon size.
 
 ## Identity motif
 The **place card**: the reservation code is set in the serif at large size between two dotted brass rules, like a folded table card. It appears on the confirmation screen and on each booking card. Slot times are written the way a menu lists courses: `19:30 – 22:00`.
