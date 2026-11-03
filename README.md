@@ -12,7 +12,7 @@ Start the API first (see `../resortos-booking-api/README.md`), then:
 
 ```bash
 npm install
-npm run dev            # http://localhost:5173, /api is proxied to http://localhost:4000
+npm run dev            # http://localhost:5173: /api → booking API :4000, /agent → assistant :4300
 ```
 
 Sign in as the seeded admin (`ADMIN_EMAIL` / `ADMIN_PASSWORD` from the API's `.env`) to see the admin pages, or create a guest account on `/register`.
@@ -39,9 +39,10 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so 
 | Path | What lives there |
 |---|---|
 | `src/types/` | This app's copy of the API types (kept separate from the backend on purpose) |
-| `src/lib/api.ts` | `fetch` wrapper: bearer token, one refresh-and-retry on 401 |
+| `src/backend-api/` | Calls to the booking API: `fetch` wrapper, bearer token, one refresh-and-retry on 401 |
+| `src/agent-api/` | Calls to the booking assistant (`/agent/chat`); no auth, the guest's email goes in each message |
 | `src/auth/` | Session context (access token in memory, refresh cookie restores it on reload) |
-| `src/pages/` | Guest screens; `src/pages/admin/` read-only admin screens |
+| `src/pages/` | Guest screens (including `ChatPage` for the assistant); `src/pages/admin/` read-only admin screens |
 | `src/components/` | Layout, native `<dialog>` wrapper, small UI pieces |
 
 ## Build
@@ -51,3 +52,8 @@ VITE_API_URL=https://api.example.com npm run build   # static files in dist/
 ```
 
 The API's `CORS_ORIGIN` must match the site's origin, and both must be served over HTTPS. The refresh cookie is `SameSite=Lax`, so host the app and API on the same site (e.g. `app.example.com` and `api.example.com`), or serve the API under the app's own `/api` path.
+
+## Test build
+`npm run preview:test` builds and serves on :5190 against the test API (:4400) and assistant (:4500); used by `resortos-booking-e2e`.
+
+Naming: folders lowercase (kebab-case when multi-word), React components PascalCase, other files camelCase.
