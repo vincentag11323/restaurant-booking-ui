@@ -3,6 +3,8 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+const apiTarget = process.env.API_PROXY_TARGET ?? "http://localhost:4000";
+
 export default defineConfig({
   plugins: [
     react(),
@@ -29,7 +31,8 @@ export default defineConfig({
       },
     }),
   ],
-  // Same-origin /api in dev so the refresh cookie works without CORS credentials juggling.
-  server: { proxy: { "/api": "http://localhost:4000" } },
-  preview: { proxy: { "/api": "http://localhost:4000" } },
+  // Same-origin /api so the refresh cookie works without CORS credentials juggling.
+  // API_PROXY_TARGET lets the e2e run point the build at the test API (e2e_spec.md §2).
+  server: { proxy: { "/api": apiTarget } },
+  preview: { proxy: { "/api": apiTarget } },
 });
