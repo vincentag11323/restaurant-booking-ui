@@ -46,7 +46,7 @@ export function AdminDashboardPage() {
       {error && <ErrorBanner message={`We couldn't load the numbers: ${error}`} />}
       {!error && !stats && <p role="status" className="text-muted">Counting bookings…</p>}
       {stats && (
-        <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
+        <div className="grid gap-4">
           <section className="card p-6" aria-labelledby="covers-heading">
             <h2 id="covers-heading" className="sr-only">Guests expected</h2>
             <p data-testid="stat-covers" className="text-6xl font-semibold tabular-nums text-pine">

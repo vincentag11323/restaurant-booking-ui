@@ -1,16 +1,17 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 
-const linkClass = ({ isActive }: { isActive: boolean }) =>
-  `inline-flex min-h-11 items-center rounded-[var(--radius-control)] px-3 font-semibold ${
-    isActive ? "bg-white text-pine" : "text-ink hover:text-pine hover:underline"
+const tabClass = ({ isActive }: { isActive: boolean }) =>
+  `flex min-h-14 flex-1 items-center justify-center px-1 text-sm font-semibold ${
+    isActive ? "border-t-2 border-brass text-pine" : "border-t-2 border-transparent text-muted hover:text-pine"
   }`;
 
+/** Phone-width shell: brand header, content column, bottom tab bar (thumb reach). */
 export function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  const links =
+  const tabs =
     user?.role === "ADMIN"
       ? [
           { to: "/admin", label: "Today" },
@@ -19,7 +20,7 @@ export function Layout() {
       : user
         ? [
             { to: "/", label: "Reserve" },
-            { to: "/bookings", label: "My bookings" },
+            { to: "/bookings", label: "Bookings" },
             { to: "/menu", label: "Menu" },
             { to: "/profile", label: "Profile" },
           ]
@@ -29,39 +30,36 @@ export function Layout() {
           ];
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-b border-line bg-sky">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-3">
-          <p className="font-serif text-2xl font-semibold text-pine">
-            ResortOS <span className="text-brass">Dining</span>
-          </p>
-          <nav aria-label="Main" className="flex flex-wrap items-center gap-1">
-            {links.map((link) => (
-              <NavLink key={link.to} to={link.to} end className={linkClass}>
-                {link.label}
-              </NavLink>
-            ))}
-            {user && (
-              <button
-                type="button"
-                className="inline-flex min-h-11 items-center px-3 font-semibold text-muted hover:text-pine hover:underline"
-                onClick={async () => {
-                  await logout();
-                  navigate("/login");
-                }}
-              >
-                Sign out
-              </button>
-            )}
-          </nav>
-        </div>
+    <div className="mx-auto flex min-h-dvh max-w-md flex-col">
+      <header className="flex items-center justify-between px-4 pb-2 pt-[max(0.75rem,env(safe-area-inset-top))]">
+        <p className="font-serif text-2xl font-semibold text-pine">
+          ResortOS <span className="text-brass">Dining</span>
+        </p>
+        {user?.role === "ADMIN" && (
+          <button
+            type="button"
+            className="min-h-11 px-2 font-semibold text-muted hover:text-pine hover:underline"
+            onClick={async () => {
+              await logout();
+              navigate("/login");
+            }}
+          >
+            Sign out
+          </button>
+        )}
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">
+      <main className="flex-1 px-4 pb-24 pt-4">
         <Outlet />
       </main>
-      <footer className="border-t border-line px-4 py-4 text-center text-sm text-muted">
-        ResortOS Dining · Branch 1 and Branch 2 · Tables are held in 2.5-hour sittings
-      </footer>
+      <nav aria-label="Main" className="fixed inset-x-0 bottom-0 border-t border-line bg-white pb-[env(safe-area-inset-bottom)]">
+        <div className="mx-auto flex max-w-md">
+          {tabs.map((tab) => (
+            <NavLink key={tab.to} to={tab.to} end className={tabClass}>
+              {tab.label}
+            </NavLink>
+          ))}
+        </div>
+      </nav>
     </div>
   );
 }

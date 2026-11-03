@@ -9,7 +9,7 @@ const TYPE_LABEL: Record<MenuType, string> = { A_LA_CARTE: "À la carte", SEASON
 
 function Dish({ item }: { item: MenuItem }) {
   return (
-    <li className="flex flex-col gap-1 border-b border-dotted border-line py-3 last:border-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+    <li className="flex flex-col gap-1 border-b border-dotted border-line py-3 last:border-0">
       <div>
         <p className="font-serif text-2xl text-pine">
           {item.name}
@@ -50,7 +50,7 @@ export function MenuPage() {
     <>
       <PageTitle title="Menu" lead="Served at both branches. Tell your server about allergies when you sit down." />
       {user?.role === "USER" && safe && (
-        <section aria-labelledby="safe-heading" className="card mb-8 p-5 sm:p-6">
+        <section aria-labelledby="safe-heading" className="card mb-8 p-5">
           <h2 id="safe-heading" className="text-3xl">Safe for you</h2>
           <p className="text-muted">
             {user.allergies.length ? `Dishes without ${user.allergies.join(", ")}.` : "Add allergies in your profile to filter this list."}
@@ -65,7 +65,7 @@ export function MenuPage() {
           </button>
         ))}
       </div>
-      <div role="tabpanel" className="card p-5 sm:p-6">
+      <div role="tabpanel" className="card p-5">
         {error && <ErrorBanner message={`We couldn't load the menu: ${error}`} />}
         {!error && !items && <p role="status" className="text-muted">Loading the menu…</p>}
         {items && items.length === 0 && <p>This menu is being refreshed. Please check back soon.</p>}

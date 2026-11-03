@@ -19,7 +19,7 @@ export function ConfirmationPage() {
   if (!reservation || reservation.id !== id) return <p role="status" className="text-muted">Loading your booking…</p>;
 
   return (
-    <section className="card mx-auto max-w-lg space-y-6 p-6 text-center sm:p-8">
+    <section className="card space-y-6 p-6 text-center">
       <h1 className="text-4xl">Your table is held</h1>
       <div>
         <p className="mb-2 text-sm text-muted">Show this code to the host when you arrive</p>
@@ -34,7 +34,7 @@ export function ConfirmationPage() {
           <div className="flex flex-wrap justify-between gap-x-4"><dt className="text-muted">Notes</dt><dd>{reservation.specialRequests}</dd></div>
         )}
       </dl>
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+      <div className="flex flex-col gap-2">
         <Link to="/bookings" className="btn-primary">See my bookings</Link>
         <Link to="/" className="btn-quiet">Book another table</Link>
       </div>

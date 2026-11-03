@@ -13,7 +13,7 @@ export function ErrorBanner({ message }: { message: string | null }) {
 export function PageTitle({ title, lead }: { title: string; lead?: ReactNode }) {
   return (
     <div className="mb-6">
-      <h1 className="text-4xl sm:text-5xl">{title}</h1>
+      <h1 className="text-4xl">{title}</h1>
       {lead && <p className="mt-2 max-w-prose text-muted">{lead}</p>}
     </div>
   );

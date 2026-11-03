@@ -40,7 +40,7 @@ function Detail({ row, onClose }: { row: AdminReservation; onClose: () => void }
     ["Notes", row.specialRequests ?? "None"],
   ];
   return (
-    <Dialog title={row.code} open onClose={onClose} placement="drawer">
+    <Dialog title={row.code} open onClose={onClose}>
       <StatusBadge status={row.status} />
       <PlaceCard code={row.code} size="sm" />
       <dl className="space-y-3">
@@ -93,8 +93,8 @@ export function AdminLogsPage() {
   return (
     <>
       <PageTitle title="Booking log" lead="Every reservation across both branches. Read-only." />
-      <form onSubmit={onSubmit} className="card mb-4 grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6">
-        <div className="lg:col-span-2">
+      <form onSubmit={onSubmit} className="card mb-4 grid grid-cols-2 gap-3 p-4">
+        <div className="col-span-2">
           <label htmlFor="q" className="field-label">Search</label>
           <input id="q" name="q" className="input" placeholder="Name, email, phone or RSV code" />
         </div>
@@ -114,7 +114,7 @@ export function AdminLogsPage() {
             <option value="VIP_WING">{SECTOR_LABEL.VIP_WING}</option>
           </select>
         </div>
-        <div className="lg:col-span-2">
+        <div className="col-span-2">
           <label htmlFor="status" className="field-label">Status</label>
           <select id="status" name="status" className="input">
             <option value="">All</option>
@@ -133,10 +133,10 @@ export function AdminLogsPage() {
           <label htmlFor="to" className="field-label">To</label>
           <input id="to" name="to" type="date" className="input" />
         </div>
-        <div className="flex flex-wrap items-end gap-2 sm:col-span-2 lg:col-span-4 lg:justify-end">
-          <button type="submit" className="btn-primary">Apply filters</button>
-          <button type="button" className="btn-quiet" onClick={() => onExport("csv")}>Export CSV</button>
-          <button type="button" className="btn-quiet" onClick={() => onExport("json")}>Export JSON</button>
+        <div className="col-span-2 flex flex-wrap gap-2">
+          <button type="submit" className="btn-primary w-full">Apply filters</button>
+          <button type="button" className="btn-quiet flex-1" onClick={() => onExport("csv")}>Export CSV</button>
+          <button type="button" className="btn-quiet flex-1" onClick={() => onExport("json")}>Export JSON</button>
         </div>
       </form>
       <ErrorBanner message={exportError} />
@@ -145,38 +145,23 @@ export function AdminLogsPage() {
       {!error && !data && <p role="status" className="text-muted">Loading bookings…</p>}
       {data && data.items.length === 0 && <p className="card p-6">No bookings match these filters.</p>}
       {data && data.items.length > 0 && (
-        <div className="card overflow-x-auto">
-          <table className="w-full min-w-[44rem] text-left">
-            <caption className="sr-only">Reservations, newest sitting first</caption>
-            <thead className="border-b border-line text-sm text-muted">
-              <tr>
-                <th scope="col" className="p-3">Code</th>
-                <th scope="col" className="p-3">Guest</th>
-                <th scope="col" className="p-3">Sitting</th>
-                <th scope="col" className="p-3">Room</th>
-                <th scope="col" className="p-3">Party</th>
-                <th scope="col" className="p-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.items.map((row) => (
-                <tr key={row.id} className="border-b border-line last:border-0">
-                  <td className="p-3">
-                    {/* The code opens the detail drawer: first column, so it stays on screen on phones. */}
-                    <button type="button" className="min-h-11 font-semibold text-pine underline hover:text-ink" aria-label={`View ${row.code}`} onClick={() => setSelected(row)}>
-                      {row.code}
-                    </button>
-                  </td>
-                  <td className="p-3">{row.customer.name}</td>
-                  <td className="p-3">{formatSlot(row.slotStart, row.slotEnd)}</td>
-                  <td className="p-3">{BRANCH_LABEL[row.branch]}, {SECTOR_LABEL[row.sector]}</td>
-                  <td className="p-3">{row.partySize}</td>
-                  <td className="p-3"><StatusBadge status={row.status} /></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ul className="space-y-3" aria-label="Reservations, newest sitting first">
+          {data.items.map((row) => (
+            <li key={row.id} className="card space-y-1 p-4">
+              <div className="flex items-center justify-between gap-2">
+                <button type="button" className="min-h-11 font-semibold text-pine underline hover:text-ink" aria-label={`View ${row.code}`} onClick={() => setSelected(row)}>
+                  {row.code}
+                </button>
+                <StatusBadge status={row.status} />
+              </div>
+              <p className="font-semibold">{row.customer.name}</p>
+              <p className="text-sm">{formatSlot(row.slotStart, row.slotEnd)}</p>
+              <p className="text-sm text-muted">
+                {BRANCH_LABEL[row.branch]}, {SECTOR_LABEL[row.sector]} · {row.partySize} {row.partySize === 1 ? "guest" : "guests"}
+              </p>
+            </li>
+          ))}
+        </ul>
       )}
       {data && data.total > data.pageSize && (
         <nav aria-label="Pages" className="mt-4 flex items-center justify-between gap-2">

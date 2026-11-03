@@ -23,7 +23,7 @@ function ChoiceGroup<T extends string>({ legend, name, value, options, onChange 
   return (
     <fieldset>
       <legend className="field-label">{legend}</legend>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid gap-2">
         {options.map((option) => (
           <label
             key={option.value}
@@ -96,8 +96,8 @@ export function BookPage() {
   return (
     <>
       <PageTitle title="Reserve a table" lead="Every sitting is 2.5 hours. Pick a room and a time, and we will join tables for your party." />
-      <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_20rem]" noValidate>
-        <div className="card space-y-6 p-5 sm:p-6">
+      <form onSubmit={onSubmit} className="space-y-4" noValidate>
+        <div className="card space-y-6 p-5">
           <ChoiceGroup
             legend="Restaurant"
             name="branch"
@@ -118,7 +118,7 @@ export function BookPage() {
               { value: "VIP_WING", label: SECTOR_LABEL.VIP_WING, hint: "Private rooms of 13, merged for larger parties" },
             ]}
           />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4">
             <div>
               <label htmlFor="date" className="field-label">Date</label>
               <input id="date" type="date" className="input" value={date} min={today} max={addDays(today, MAX_DAYS_AHEAD)} onChange={(e) => setDate(e.target.value)} />
@@ -134,7 +134,7 @@ export function BookPage() {
             {slotsError && <ErrorBanner message={`We couldn't load sittings: ${slotsError}`} />}
             {!slotsError && !slots && <p className="text-muted" role="status">Checking which tables are free…</p>}
             {slots && (
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="grid gap-2">
                 {slots.map((slot) => {
                   const fits = !partyValid || slot.freeUnits >= unitsFor(sector, party);
                   const disabled = !slot.bookable || slot.freeUnits === 0 || !fits;
@@ -168,8 +168,8 @@ export function BookPage() {
             <textarea id="specialRequests" className="input min-h-24" maxLength={500} value={specialRequests} onChange={(e) => setSpecialRequests(e.target.value)} placeholder="Allergies, high chair, celebration…" />
           </div>
         </div>
-        <aside className="card h-fit space-y-4 p-5 sm:p-6 lg:sticky lg:top-4">
-          <h2 className="text-2xl">Your sitting</h2>
+        <section aria-labelledby="summary-heading" className="card space-y-4 p-5">
+          <h2 id="summary-heading" className="text-2xl">Your sitting</h2>
           <dl className="space-y-1 text-sm">
             <div className="flex justify-between gap-2"><dt className="text-muted">Restaurant</dt><dd>{BRANCH_LABEL[branch]}</dd></div>
             <div className="flex justify-between gap-2"><dt className="text-muted">Room</dt><dd>{SECTOR_LABEL[sector]}</dd></div>
@@ -183,7 +183,7 @@ export function BookPage() {
           <button type="submit" className="btn-primary w-full" disabled={busy}>
             {busy ? "Holding your table…" : "Hold this table"}
           </button>
-        </aside>
+        </section>
       </form>
     </>
   );

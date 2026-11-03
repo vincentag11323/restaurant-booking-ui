@@ -26,7 +26,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md">
+    <div>
       <PageTitle title="Welcome back" lead="Sign in to reserve a table or manage your bookings." />
       <form onSubmit={onSubmit} className="card space-y-4 p-6">
         <ErrorBanner message={error} />

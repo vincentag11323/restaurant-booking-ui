@@ -1,11 +1,13 @@
 import { type FormEvent, useState } from "react";
+import { useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { ErrorBanner, PageTitle } from "../components/ui";
 import { api, json } from "../lib/api";
 import type { User } from "../types/api";
 
 export function ProfilePage() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -30,7 +32,7 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="max-w-xl">
+    <div>
       <PageTitle title="Profile" lead="Your allergies shape the dishes we suggest and are shared with the kitchen for your bookings." />
       <form onSubmit={onSubmit} className="card space-y-4 p-6">
         <ErrorBanner message={error} />
@@ -53,6 +55,16 @@ export function ProfilePage() {
           <p role="status" className="text-pine">{saved ? "Profile saved" : ""}</p>
         </div>
       </form>
+      <button
+        type="button"
+        className="btn-quiet mt-4 w-full"
+        onClick={async () => {
+          await logout();
+          navigate("/login");
+        }}
+      >
+        Sign out
+      </button>
     </div>
   );
 }

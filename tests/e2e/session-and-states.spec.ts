@@ -28,6 +28,7 @@ test.describe("session", () => {
   test("signing out returns to the sign-in page and protects pages again", async ({ page }) => {
     await mockApi(page, { signedInAs: GUEST });
     await page.goto("/bookings");
+    await page.getByRole("link", { name: "Profile" }).click();
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/login$/);
     await page.goto("/bookings");
@@ -132,8 +133,9 @@ test.describe("dialogs and pages reached directly", () => {
     await page.goto("/");
     await page.getByRole("radio", { name: "VIP Private Dining" }).check();
     await page.getByLabel("Guests").fill("27");
-    await expect(page.getByRole("complementary").getByText("Rooms")).toBeVisible();
-    await expect(page.getByRole("complementary")).toContainText("3");
+    const summary = page.getByRole("region", { name: "Your sitting" });
+    await expect(summary.getByText("Rooms")).toBeVisible();
+    await expect(summary).toContainText("3");
     await page.getByLabel("Guests").fill("50");
     await expect(page.getByRole("radio", { name: /^11:00/ })).toBeEnabled();
   });

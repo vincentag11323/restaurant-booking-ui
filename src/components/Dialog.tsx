@@ -1,18 +1,10 @@
 import { type ReactNode, useEffect, useId, useRef } from "react";
 
-/** Native <dialog>: focus trapping and Escape-to-close come from the browser. */
-const PLACEMENT = {
-  center: "m-auto w-[min(32rem,calc(100vw-2rem))] rounded-[var(--radius-card)]",
-  drawer: "my-0 ml-auto mr-0 h-dvh max-h-none w-[min(28rem,100vw)]",
-};
-
-export function Dialog({ title, open, onClose, children, placement = "center" }: {
-  title: string;
-  open: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  placement?: keyof typeof PLACEMENT;
-}) {
+/**
+ * Native <dialog> shown as a bottom sheet (thumb reach on phones).
+ * Focus trapping and Escape-to-close come from the browser.
+ */
+export function Dialog({ title, open, onClose, children }: { title: string; open: boolean; onClose: () => void; children: ReactNode }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
 
@@ -28,10 +20,10 @@ export function Dialog({ title, open, onClose, children, placement = "center" }:
       ref={ref}
       aria-labelledby={titleId}
       onClose={onClose}
-      className={`${PLACEMENT[placement]} border border-line bg-white p-0 text-ink shadow-xl backdrop:bg-ink/40`}
+      className="mx-auto mb-0 mt-auto max-h-[90dvh] w-full max-w-md overflow-y-auto rounded-t-[var(--radius-card)] border border-line bg-white p-0 text-ink shadow-xl backdrop:bg-ink/40"
     >
       {open && (
-        <div className="space-y-4 p-6">
+        <div className="space-y-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           <h2 id={titleId} className="text-3xl">{title}</h2>
           {children}
         </div>

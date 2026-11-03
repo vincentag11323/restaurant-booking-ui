@@ -57,7 +57,7 @@ function RescheduleDialog({ reservation, onClose, onSaved }: { reservation: Rese
           <input id="r-party" type="number" min={1} max={50} required className="input" value={partySize} onChange={(e) => setPartySize(e.target.value)} />
         </div>
         <ErrorBanner message={error} />
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-2">
           <button type="button" className="btn-quiet" onClick={onClose}>Keep current time</button>
           <button type="submit" className="btn-primary" disabled={busy}>{busy ? "Checking…" : "Save new time"}</button>
         </div>
@@ -86,7 +86,7 @@ function CancelDialog({ reservation, onClose, onCancelled }: { reservation: Rese
         {formatSlot(reservation.slotStart, reservation.slotEnd)} for {reservation.partySize}. Other guests will be able to book it.
       </p>
       <ErrorBanner message={error} />
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <div className="flex flex-col-reverse gap-2">
         <button type="button" className="btn-quiet" onClick={onClose}>Keep booking</button>
         <button type="button" className="btn-danger" onClick={confirm} disabled={busy}>{busy ? "Releasing…" : "Release table"}</button>
       </div>
@@ -138,7 +138,7 @@ export function MyBookingsPage() {
             {tab === "upcoming" && <Link to="/" className="btn-primary mt-4">Reserve a table</Link>}
           </div>
         )}
-        <ul className="grid gap-4 md:grid-cols-2">
+        <ul className="grid gap-4">
           {shown.map((r) => (
             <li key={r.id} className="card space-y-3 p-5">
               <div className="flex items-start justify-between gap-2">

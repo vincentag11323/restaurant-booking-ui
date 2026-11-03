@@ -29,7 +29,7 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md">
+    <div>
       <PageTitle title="Create a guest account" lead="Book tables, change times and keep your allergy notes in one place." />
       <form onSubmit={onSubmit} className="card space-y-4 p-6">
         <ErrorBanner message={error} />
