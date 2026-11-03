@@ -3,7 +3,7 @@ import type { AdminReservation, MenuItem, Reservation, Slot, User } from "../../
 
 /**
  * A small in-memory stand-in for the API, so UI tests run without the backend.
- * It follows requirements/api_spec.md; the backend's own Playwright suite proves the real API matches it.
+ * It follows requirements/API_SPEC.md; the backend's own Playwright suite proves the real API matches it.
  */
 export const GUEST: User = { id: "u-guest", email: "ayu@example.com", name: "Ayu Lestari", phone: "+62 812 1111 2222", allergies: ["fish"], role: "USER" };
 export const ADMIN: User = { id: "u-admin", email: "admin@resortos.test", name: "Restaurant Admin", phone: null, allergies: [], role: "ADMIN" };

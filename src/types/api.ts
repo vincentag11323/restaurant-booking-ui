@@ -1,4 +1,4 @@
-// Mirrors requirements/api_spec.md. Kept separate from the backend on purpose (loose coupling).
+// Mirrors requirements/API_SPEC.md. Kept separate from the backend on purpose (loose coupling).
 
 export type Role = "USER" | "ADMIN";
 export type Branch = "BRANCH_1" | "BRANCH_2";

@@ -7,7 +7,7 @@ export default defineConfig({
   reporter: "list",
   // Service workers are blocked so page.route mocks see every request; pwa.spec.ts opts back in.
   use: { baseURL: `http://localhost:${PORT}`, trace: "retain-on-failure", serviceWorkers: "block" },
-  // Mobile-only app (ui_spec.md): one phone project.
+  // Mobile-only app (UI_SPEC.md): one phone project.
   projects: [{ name: "mobile", use: { ...devices["Pixel 7"] } }],
   // Tests run against the production build (the service worker only exists there).
   // UI tests mock every /api call with page.route, so no backend is needed.

@@ -4,7 +4,7 @@ Mobile-first PWA for the ResortOS restaurants: guests reserve and manage tables,
 
 React 19 · Vite · vite-plugin-pwa · TypeScript · Tailwind CSS 4 · React Router · Playwright
 
-Specs live in the planning repo (`../requirements/`): `ui_spec.md` (screens), `api_spec.md` (the API this app calls). Visual direction is in [DESIGN.md](DESIGN.md).
+Specs live in the planning repo (`../requirements/`): `UI_SPEC.md` (screens), `API_SPEC.md` (the API this app calls). Visual direction is in [DESIGN.md](DESIGN.md).
 
 ## Run locally
 
