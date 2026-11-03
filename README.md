@@ -39,9 +39,9 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so 
 | Path | What lives there |
 |---|---|
 | `src/types/` | This app's copy of the API types (kept separate from the backend on purpose) |
-| `src/backend-api/` | Calls to the booking API: `fetch` wrapper, bearer token, one refresh-and-retry on 401 |
+| `src/backend-api/` | Calls to the booking API: `fetch` wrapper sending the HttpOnly session cookie; a 401 outside `/auth/` sends the guest to sign in (no refresh, no retry) |
 | `src/agent-api/` | Calls to the booking assistant (`/agent/chat`); no auth, the guest's email goes in each message |
-| `src/auth/` | Session context (access token in memory, refresh cookie restores it on reload) |
+| `src/auth/` | Session context (on page load it asks `GET /me` who is signed in; the 1-hour session cookie is never extended) |
 | `src/pages/` | Guest screens (including `ChatPage` for the assistant); `src/pages/admin/` read-only admin screens |
 | `src/components/` | Layout, native `<dialog>` wrapper, small UI pieces |
 
@@ -51,7 +51,7 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so 
 VITE_API_URL=https://api.example.com npm run build   # static files in dist/
 ```
 
-The API's `CORS_ORIGIN` must match the site's origin, and both must be served over HTTPS. The refresh cookie is `SameSite=Lax`, so host the app and API on the same site (e.g. `app.example.com` and `api.example.com`), or serve the API under the app's own `/api` path.
+The API's `CORS_ORIGIN` must match the site's origin, and both must be served over HTTPS. The session cookie is `SameSite=Lax`, so host the app and API on the same site (e.g. `app.example.com` and `api.example.com`), or serve the API under the app's own `/api` path.
 
 ## Test build
 `npm run preview:test` builds and serves on :5190 against the test API (:4400) and assistant (:4500); used by `resortos-booking-e2e`.

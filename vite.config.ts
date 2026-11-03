@@ -34,7 +34,7 @@ export default defineConfig({
       },
     }),
   ],
-  // Same-origin /api so the refresh cookie works without CORS credentials juggling.
+  // Same-origin /api so the session cookie works without CORS credentials juggling.
   // API_PROXY_TARGET lets the e2e run point the build at the test API (e2e_spec.md §2).
   server: { proxy: { "/api": apiTarget, "/agent": agentProxy } },
   preview: { proxy: { "/api": apiTarget, "/agent": agentProxy } },
