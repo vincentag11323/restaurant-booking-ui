@@ -22,11 +22,22 @@ export function setSessionExpiredHandler(handler: () => void) {
   onSessionExpired = handler;
 }
 
+const OFFLINE_MESSAGE = "You're offline. Check your connection and try again.";
+
+/** fetch() only rejects when the request never reached a server, i.e. no network. */
+async function fetchOrOffline(url: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch {
+    throw new ApiError(0, OFFLINE_MESSAGE);
+  }
+}
+
 async function send(path: string, init: RequestInit): Promise<Response> {
   const headers = new Headers(init.headers);
   if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
   if (init.body && !headers.has("Content-Type")) headers.set("Content-Type", "application/json");
-  return fetch(`${BASE}/api${path}`, { ...init, headers, credentials: "include" });
+  return fetchOrOffline(`${BASE}/api${path}`, { ...init, headers, credentials: "include" });
 }
 
 let refreshing: Promise<AuthResponse | null> | null = null;
@@ -34,8 +45,8 @@ let refreshing: Promise<AuthResponse | null> | null = null;
 /** Concurrent callers share one refresh request, so parallel 401s don't race each other. */
 export function refreshSession(): Promise<AuthResponse | null> {
   refreshing ??= (async () => {
-    const res = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", credentials: "include" });
-    if (!res.ok) return null;
+    const res = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", credentials: "include" }).catch(() => null);
+    if (!res?.ok) return null;
     const body: AuthResponse = await res.json();
     accessToken = body.accessToken;
     return body;

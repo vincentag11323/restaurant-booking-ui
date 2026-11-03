@@ -1,0 +1,8 @@
+<!-- PLACEHOLDER app icon (DESIGN.md): place-card motif, no lettering. Replace with the real ResortOS logo. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#1E4636"/>
+  <rect x="136" y="176" width="240" height="160" rx="12" fill="#E4EFF7"/>
+  <line x1="160" y1="220" x2="352" y2="220" stroke="#8A6421" stroke-width="8" stroke-dasharray="2 14" stroke-linecap="round"/>
+  <line x1="160" y1="292" x2="352" y2="292" stroke="#8A6421" stroke-width="8" stroke-dasharray="2 14" stroke-linecap="round"/>
+  <rect x="200" y="246" width="112" height="20" rx="4" fill="#1E4636"/>
+</svg>
