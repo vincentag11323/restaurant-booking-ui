@@ -60,6 +60,12 @@ interface MockOptions {
   rejectCapacityAt?: string;
   /** Delay (ms) for admin log responses filtered by this status, to simulate a slow query */
   slowStatus?: { status: string; ms: number };
+  /** API paths (without /api) that answer 500 */
+  failPaths?: string[];
+  /** First token is already expired: authed calls with it get 401 until /auth/refresh issues a fresh one */
+  expiredToken?: boolean;
+  /** /auth/refresh fails after the first (page-load) call */
+  refreshFailsLater?: boolean;
 }
 
 export async function mockApi(page: Page, options: MockOptions = {}) {
@@ -69,6 +75,8 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     adminRows: options.adminRows ?? [],
     adminQueries: [] as URLSearchParams[],
     created: [] as Record<string, unknown>[],
+    refreshCalls: 0,
+    token: options.expiredToken ? "stale-token" : "token",
   };
   let nextId = 100;
 
@@ -81,9 +89,15 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     const path = url.pathname.replace(/^\/api/, "");
     const method = req.method();
     const body = req.postDataJSON?.() ?? null;
-    const session = () => ({ accessToken: `token-${state.user?.id}`, user: state.user });
+    const session = () => ({ accessToken: state.token, user: state.user });
 
-    if (path === "/auth/refresh") return state.user ? reply(route, 200, session()) : reply(route, 401, { message: "Invalid or expired refresh token" });
+    if (options.failPaths?.includes(path)) return reply(route, 500, { message: "Internal server error" });
+    if (path === "/auth/refresh") {
+      state.refreshCalls++;
+      if (!state.user || (options.refreshFailsLater && state.refreshCalls > 1)) return reply(route, 401, { message: "Invalid or expired refresh token" });
+      if (state.refreshCalls > 1) state.token = "fresh-token";
+      return reply(route, 200, session());
+    }
     if (path === "/auth/logout") {
       state.user = null;
       return reply(route, 200, { message: "Logged out" });
@@ -113,6 +127,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     }
 
     if (!state.user) return reply(route, 401, { message: "Authentication required" });
+    if (req.headers().authorization === "Bearer stale-token") return reply(route, 401, { message: "Invalid or expired token" });
 
     if (path === "/me") {
       if (method === "PATCH") state.user = { ...state.user, ...body };
@@ -153,6 +168,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     if (path.startsWith("/admin")) {
       if (state.user.role !== "ADMIN") return reply(route, 403, { message: "Forbidden" });
       if (path === "/admin/stats") {
+        state.adminQueries.push(url.searchParams);
         return reply(route, 200, {
           date: url.searchParams.get("date"),
           totalBookings: 2,
@@ -171,11 +187,19 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
         }
         const q = url.searchParams.get("q")?.toLowerCase();
         const status = url.searchParams.get("status");
-        const items = state.adminRows.filter((r) => (!status || r.status === status) && (!q || r.code.toLowerCase() === q || r.customer.name.toLowerCase().includes(q)));
-        return reply(route, 200, { items, total: items.length, page: 1, pageSize: 20 });
+        const matches = state.adminRows.filter((r) => (!status || r.status === status) && (!q || r.code.toLowerCase() === q || r.customer.name.toLowerCase().includes(q)));
+        const page = Number(url.searchParams.get("page") ?? 1);
+        const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
+        return reply(route, 200, { items: matches.slice((page - 1) * pageSize, page * pageSize), total: matches.length, page, pageSize });
       }
       if (path === "/admin/reservations/export") {
-        return route.fulfill({ status: 200, contentType: "text/csv", headers: { "Content-Disposition": 'attachment; filename="reservations.csv"' }, body: "code,status\n" });
+        const format = url.searchParams.get("format") ?? "csv";
+        return route.fulfill({
+          status: 200,
+          contentType: format === "csv" ? "text/csv" : "application/json",
+          headers: { "Content-Disposition": `attachment; filename="reservations.${format}"` },
+          body: format === "csv" ? "code,status\n" : "[]",
+        });
       }
       const detail = /^\/admin\/reservations\/([^/]+)$/.exec(path);
       const row = detail && state.adminRows.find((r) => r.id === detail[1]);
