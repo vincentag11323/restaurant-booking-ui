@@ -43,8 +43,8 @@ export function AdminDashboardPage() {
         <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
           <section className="card p-6" aria-labelledby="covers-heading">
             <h2 id="covers-heading" className="sr-only">Guests expected</h2>
-            <p data-testid="stat-covers" className="font-serif text-6xl text-pine">
-              {stats.totalCovers} <span className="font-sans text-xl text-muted">guests expected</span>
+            <p data-testid="stat-covers" className="text-6xl font-semibold tabular-nums text-pine">
+              {stats.totalCovers} <span className="text-xl font-normal text-muted">guests expected</span>
             </p>
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
               <p data-testid="stat-bookings"><span className="text-2xl font-semibold">{stats.totalBookings}</span> active bookings</p>
