@@ -1,4 +1,4 @@
-import { type FormEvent, useCallback, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { Dialog } from "../../components/Dialog";
 import { ErrorBanner, PageTitle, PlaceCard, StatusBadge } from "../../components/ui";
 import { api, request } from "../../lib/api";
@@ -64,13 +64,18 @@ export function AdminLogsPage() {
   const [selected, setSelected] = useState<AdminReservation | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const load = useCallback(() => {
+  useEffect(() => {
+    // Ignore responses from superseded filters so a slow old query can't overwrite newer results.
+    let current = true;
     setData(null);
     setError(null);
-    api<AdminReservationPage>(`/admin/reservations?${params}&page=${page}&pageSize=${PAGE_SIZE}`).then(setData).catch((err: Error) => setError(err.message));
+    api<AdminReservationPage>(`/admin/reservations?${params}&page=${page}&pageSize=${PAGE_SIZE}`)
+      .then((result) => current && setData(result))
+      .catch((err: Error) => current && setError(err.message));
+    return () => {
+      current = false;
+    };
   }, [params, page]);
-
-  useEffect(load, [load]);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -29,12 +29,20 @@ async function send(path: string, init: RequestInit): Promise<Response> {
   return fetch(`${BASE}/api${path}`, { ...init, headers, credentials: "include" });
 }
 
-export async function refreshSession(): Promise<AuthResponse | null> {
-  const res = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", credentials: "include" });
-  if (!res.ok) return null;
-  const body: AuthResponse = await res.json();
-  accessToken = body.accessToken;
-  return body;
+let refreshing: Promise<AuthResponse | null> | null = null;
+
+/** Concurrent callers share one refresh request, so parallel 401s don't race each other. */
+export function refreshSession(): Promise<AuthResponse | null> {
+  refreshing ??= (async () => {
+    const res = await fetch(`${BASE}/api/auth/refresh`, { method: "POST", credentials: "include" });
+    if (!res.ok) return null;
+    const body: AuthResponse = await res.json();
+    accessToken = body.accessToken;
+    return body;
+  })().finally(() => {
+    refreshing = null;
+  });
+  return refreshing;
 }
 
 /** Calls the API; on 401 it refreshes the access token once and retries. */

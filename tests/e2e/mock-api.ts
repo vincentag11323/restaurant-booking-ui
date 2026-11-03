@@ -58,6 +58,8 @@ interface MockOptions {
   fullSlots?: string[];
   /** startTime whose booking request the "server" rejects for capacity */
   rejectCapacityAt?: string;
+  /** Delay (ms) for admin log responses filtered by this status, to simulate a slow query */
+  slowStatus?: { status: string; ms: number };
 }
 
 export async function mockApi(page: Page, options: MockOptions = {}) {
@@ -164,6 +166,9 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
       }
       if (path === "/admin/reservations") {
         state.adminQueries.push(url.searchParams);
+        if (options.slowStatus && url.searchParams.get("status") === options.slowStatus.status) {
+          await new Promise((resolve) => setTimeout(resolve, options.slowStatus!.ms));
+        }
         const q = url.searchParams.get("q")?.toLowerCase();
         const status = url.searchParams.get("status");
         const items = state.adminRows.filter((r) => (!status || r.status === status) && (!q || r.code.toLowerCase() === q || r.customer.name.toLowerCase().includes(q)));

@@ -51,6 +51,19 @@ test("the booking log filters, searches and opens a read-only detail drawer", as
   await expect(drawer).toBeHidden();
 });
 
+test("a slow earlier filter never overwrites the latest results", async ({ page }) => {
+  await mockApi(page, { signedInAs: ADMIN, adminRows: rows, slowStatus: { status: "CANCELLED", ms: 800 } });
+  await page.goto("/admin/logs");
+  await page.getByLabel("Status").selectOption("CANCELLED");
+  await page.getByRole("button", { name: "Apply filters" }).click();
+  await page.getByLabel("Status").selectOption("CONFIRMED");
+  await page.getByRole("button", { name: "Apply filters" }).click();
+  await expect(page.getByRole("button", { name: "View RSV-ADM1N1" })).toBeVisible();
+  await page.waitForTimeout(1000);
+  await expect(page.getByRole("button", { name: "View RSV-ADM1N1" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "View RSV-CXL222" })).toBeHidden();
+});
+
 test("export downloads the filtered log", async ({ page }) => {
   await mockApi(page, { signedInAs: ADMIN, adminRows: rows });
   await page.goto("/admin/logs");

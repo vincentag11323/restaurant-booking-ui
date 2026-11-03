@@ -14,9 +14,15 @@ export function AdminDashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let current = true;
     setStats(null);
     setError(null);
-    api<Stats>(`/admin/stats?date=${date}${branch ? `&branch=${branch}` : ""}`).then(setStats).catch((err: Error) => setError(err.message));
+    api<Stats>(`/admin/stats?date=${date}${branch ? `&branch=${branch}` : ""}`)
+      .then((result) => current && setStats(result))
+      .catch((err: Error) => current && setError(err.message));
+    return () => {
+      current = false;
+    };
   }, [date, branch]);
 
   return (

@@ -31,8 +31,15 @@ export function MenuPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let current = true;
     setItems(null);
-    api<MenuItem[]>(`/menu?type=${type}`).then(setItems).catch((err: Error) => setError(err.message));
+    setError(null);
+    api<MenuItem[]>(`/menu?type=${type}`)
+      .then((result) => current && setItems(result))
+      .catch((err: Error) => current && setError(err.message));
+    return () => {
+      current = false;
+    };
   }, [type]);
 
   useEffect(() => {

@@ -12,11 +12,11 @@ export function ConfirmationPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!reservation) api<Reservation>(`/reservations/${id}`).then(setReservation).catch((err: Error) => setError(err.message));
+    if (reservation?.id !== id) api<Reservation>(`/reservations/${id}`).then(setReservation).catch((err: Error) => setError(err.message));
   }, [id, reservation]);
 
   if (error) return <ErrorBanner message={error} />;
-  if (!reservation) return <p role="status" className="text-muted">Loading your booking…</p>;
+  if (!reservation || reservation.id !== id) return <p role="status" className="text-muted">Loading your booking…</p>;
 
   return (
     <section className="card mx-auto max-w-lg space-y-6 p-6 text-center sm:p-8">
