@@ -6,7 +6,7 @@ import type { AuthResponse, RegisterInput, User } from "../types/api";
 
 interface AuthState {
   user: User | null;
-  /** True until the page-load session check (GET /me) has answered. */
+  /** True until the page-load session check (GET /api/users/me) has answered. */
   restoring: boolean;
   login: (email: string, password: string) => Promise<User>;
   register: (input: RegisterInput) => Promise<User>;
