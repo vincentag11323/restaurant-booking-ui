@@ -2,8 +2,7 @@ import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { ErrorBanner, PageTitle } from "../components/ui";
-import { api, json } from "../backendApi/client";
-import type { User } from "../types/api";
+import { updateMe } from "../backendApi/users";
 
 export function ProfilePage() {
   const { user, setUser, logout } = useAuth();
@@ -22,7 +21,7 @@ export function ProfilePage() {
     setSaved(false);
     setError(null);
     try {
-      setUser(await api<User>("/me", { method: "PATCH", body: json({ name: String(form.get("name")).trim(), phone: phone || null, allergies }) }));
+      setUser(await updateMe({ name: String(form.get("name")).trim(), phone: phone || null, allergies }));
       setSaved(true);
     } catch (err) {
       setError((err as Error).message);

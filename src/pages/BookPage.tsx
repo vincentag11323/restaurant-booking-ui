@@ -1,9 +1,10 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { ErrorBanner, PageTitle } from "../components/ui";
-import { api, json } from "../backendApi/client";
+import { listAvailabilities } from "../backendApi/availabilities";
+import { createReservation } from "../backendApi/reservations";
 import { BRANCH_LABEL, SECTOR_LABEL, addDays, formatSlot, localDateKey } from "../lib/format";
-import type { Branch, Reservation, Sector, Slot, SlotStartTime } from "../types/api";
+import type { Branch, Sector, Slot, SlotStartTime } from "../types/api";
 
 const MAX_PARTY = 50;
 const MAX_DAYS_AHEAD = 60;
@@ -63,7 +64,7 @@ export function BookPage() {
     setSlots(null);
     setSlotsError(null);
     setStartTime(null);
-    api<Slot[]>(`/availability?branch=${branch}&sector=${sector}&date=${date}`)
+    listAvailabilities(branch, sector, date)
       .then((data) => current && setSlots(data))
       .catch((err: Error) => current && setSlotsError(err.message));
     return () => {
@@ -82,10 +83,7 @@ export function BookPage() {
     setBusy(true);
     setFormError(null);
     try {
-      const reservation = await api<Reservation>("/reservations", {
-        method: "POST",
-        body: json({ branch, sector, date, startTime, partySize: party, ...(specialRequests.trim() && { specialRequests: specialRequests.trim() }) }),
-      });
+      const reservation = await createReservation({ branch, sector, date, startTime, partySize: party, ...(specialRequests.trim() && { specialRequests: specialRequests.trim() }) });
       navigate(`/bookings/${reservation.id}/confirmed`, { state: reservation });
     } catch (err) {
       setFormError((err as Error).message);

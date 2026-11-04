@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router";
 import { ErrorBanner, PlaceCard } from "../components/ui";
-import { api } from "../backendApi/client";
+import { getMyReservation } from "../backendApi/reservations";
 import { BRANCH_LABEL, SECTOR_LABEL, formatSlot, tableSummary } from "../lib/format";
 import type { Reservation } from "../types/api";
 
@@ -12,7 +12,7 @@ export function ConfirmationPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (reservation?.id !== id) api<Reservation>(`/reservations/${id}`).then(setReservation).catch((err: Error) => setError(err.message));
+    if (id && reservation?.id !== id) getMyReservation(id).then(setReservation).catch((err: Error) => setError(err.message));
   }, [id, reservation]);
 
   if (error) return <ErrorBanner message={error} />;

@@ -2,7 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Dialog } from "../components/Dialog";
 import { ErrorBanner, PageTitle, PlaceCard, StatusBadge } from "../components/ui";
-import { api, json } from "../backendApi/client";
+import { cancelReservation, listMyReservations, rescheduleReservation } from "../backendApi/reservations";
 import { BRANCH_LABEL, SECTOR_LABEL, addDays, formatSlot, localDateKey, localTime, tableSummary } from "../lib/format";
 import { type Reservation, SLOT_START_TIMES, type SlotStartTime } from "../types/api";
 
@@ -25,10 +25,7 @@ function RescheduleDialog({ reservation, onClose, onSaved }: { reservation: Rese
     setBusy(true);
     setError(null);
     try {
-      const saved = await api<Reservation>(`/reservations/${reservation.id}`, {
-        method: "PATCH",
-        body: json({ date, startTime, partySize: Number(partySize) }),
-      });
+      const saved = await rescheduleReservation(reservation.id, { date, startTime, partySize: Number(partySize) });
       onSaved(saved);
     } catch (err) {
       setError((err as Error).message);
@@ -73,7 +70,7 @@ function CancelDialog({ reservation, onClose, onCancelled }: { reservation: Rese
   async function confirm() {
     setBusy(true);
     try {
-      onCancelled(await api<Reservation>(`/reservations/${reservation.id}`, { method: "DELETE" }));
+      onCancelled(await cancelReservation(reservation.id));
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
@@ -102,7 +99,7 @@ export function MyBookingsPage() {
   const [cancelling, setCancelling] = useState<Reservation | null>(null);
 
   useEffect(() => {
-    api<Reservation[]>("/reservations").then(setReservations).catch((err: Error) => setError(err.message));
+    listMyReservations().then(setReservations).catch((err: Error) => setError(err.message));
   }, []);
 
   const replace = (updated: Reservation) => setReservations((list) => list?.map((r) => (r.id === updated.id ? updated : r)) ?? null);

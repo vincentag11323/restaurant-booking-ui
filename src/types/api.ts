@@ -94,3 +94,16 @@ export interface RescheduleInput {
   startTime: SlotStartTime;
   partySize?: number;
 }
+
+export interface RegisterInput {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+}
+
+export interface UpdateMeInput {
+  name: string;
+  phone: string | null;
+  allergies: string[];
+}

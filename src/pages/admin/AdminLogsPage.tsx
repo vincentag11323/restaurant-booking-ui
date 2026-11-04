@@ -1,7 +1,7 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { Dialog } from "../../components/Dialog";
 import { ErrorBanner, PageTitle, PlaceCard, StatusBadge } from "../../components/ui";
-import { api, request } from "../../backendApi/client";
+import { exportAdminReservations, listAdminReservations } from "../../backendApi/admins";
 import { BRANCH_LABEL, SECTOR_LABEL, formatSlot, formatStamp, tableSummary } from "../../lib/format";
 import type { AdminReservation, AdminReservationPage } from "../../types/api";
 
@@ -18,7 +18,7 @@ function toQuery(form: FormData): URLSearchParams {
 }
 
 async function download(params: URLSearchParams, format: "csv" | "json") {
-  const res = await request(`/admin/reservations/export?${params}&format=${format}`);
+  const res = await exportAdminReservations(params, format);
   const filename = /filename="?([^";]+)"?/.exec(res.headers.get("Content-Disposition") ?? "")?.[1] ?? `reservations.${format}`;
   const url = URL.createObjectURL(await res.blob());
   const link = Object.assign(document.createElement("a"), { href: url, download: filename });
@@ -70,7 +70,7 @@ export function AdminLogsPage() {
     let current = true;
     setData(null);
     setError(null);
-    api<AdminReservationPage>(`/admin/reservations?${params}&page=${page}&pageSize=${PAGE_SIZE}`)
+    listAdminReservations(params, page, PAGE_SIZE)
       .then((result) => current && setData(result))
       .catch((err: Error) => current && setError(err.message));
     return () => {

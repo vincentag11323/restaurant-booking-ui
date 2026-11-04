@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { ErrorBanner, PageTitle } from "../../components/ui";
-import { api } from "../../backendApi/client";
+import { getStats } from "../../backendApi/admins";
 import { BRANCH_LABEL, SECTOR_LABEL, localDateKey } from "../../lib/format";
 import type { Branch, Stats } from "../../types/api";
 
@@ -17,7 +17,7 @@ export function AdminDashboardPage() {
     let current = true;
     setStats(null);
     setError(null);
-    api<Stats>(`/admin/stats?date=${date}${branch ? `&branch=${branch}` : ""}`)
+    getStats(date, branch || undefined)
       .then((result) => current && setStats(result))
       .catch((err: Error) => current && setError(err.message));
     return () => {

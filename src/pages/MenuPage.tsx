@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { ErrorBanner, PageTitle } from "../components/ui";
-import { api } from "../backendApi/client";
+import { listMenu, listRecommendations } from "../backendApi/menus";
 import { formatPrice } from "../lib/format";
 import type { MenuItem, MenuType } from "../types/api";
 
@@ -34,7 +34,7 @@ export function MenuPage() {
     let current = true;
     setItems(null);
     setError(null);
-    api<MenuItem[]>(`/menu?type=${type}`)
+    listMenu(type)
       .then((result) => current && setItems(result))
       .catch((err: Error) => current && setError(err.message));
     return () => {
@@ -43,7 +43,7 @@ export function MenuPage() {
   }, [type]);
 
   useEffect(() => {
-    if (user?.role === "USER") api<MenuItem[]>("/menu/recommendations").then(setSafe).catch(() => setSafe(null));
+    if (user?.role === "USER") listRecommendations().then(setSafe).catch(() => setSafe(null));
   }, [user]);
 
   return (
