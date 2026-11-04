@@ -62,38 +62,38 @@ test.describe("session", () => {
 
 test.describe("error states name the problem", () => {
   test("bookings fail to load", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST, failPaths: ["/reservations"] });
+    await mockApi(page, { signedInAs: GUEST, failPaths: ["/users/reservations"] });
     await page.goto("/bookings");
     await expect(page.getByRole("alert")).toHaveText("We couldn't load your bookings: Internal server error");
   });
 
   test("sittings fail to load", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST, failPaths: ["/availability"] });
+    await mockApi(page, { signedInAs: GUEST, failPaths: ["/public/availabilities"] });
     await page.goto("/");
     await expect(page.getByRole("alert")).toHaveText("We couldn't load sittings: Internal server error");
   });
 
   test("menu fails to load", async ({ page }) => {
-    await mockApi(page, { failPaths: ["/menu"] });
+    await mockApi(page, { failPaths: ["/public/menus"] });
     await page.goto("/menu");
     await expect(page.getByRole("alert")).toHaveText("We couldn't load the menu: Internal server error");
   });
 
   test("admin numbers fail to load", async ({ page }) => {
-    await mockApi(page, { signedInAs: ADMIN, failPaths: ["/admin/stats"] });
+    await mockApi(page, { signedInAs: ADMIN, failPaths: ["/admins/stats"] });
     await page.goto("/admin");
     await expect(page.getByRole("alert")).toHaveText("We couldn't load the numbers: Internal server error");
   });
 
   test("profile save fails", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST, failPaths: ["PATCH /me"] });
+    await mockApi(page, { signedInAs: GUEST, failPaths: ["PATCH /users/me"] });
     await page.goto("/profile");
     await page.getByRole("button", { name: "Save profile" }).click();
     await expect(page.getByRole("alert")).toHaveText("Internal server error");
   });
 
   test("a reschedule the server rejects keeps the dialog open with the reason", async ({ page }) => {
-    await mockApi(page, { signedInAs: GUEST, reservations: [upcoming], failPaths: ["/reservations/r-up"] });
+    await mockApi(page, { signedInAs: GUEST, reservations: [upcoming], failPaths: ["/users/reservations/r-up"] });
     await page.goto("/bookings");
     await page.getByRole("button", { name: "Change time for RSV-UPC0M1" }).click();
     await page.getByRole("button", { name: "Save new time" }).click();

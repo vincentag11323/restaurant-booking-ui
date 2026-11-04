@@ -61,7 +61,7 @@ interface MockOptions {
   rejectCapacityAt?: string;
   /** Delay (ms) for admin log responses filtered by this status, to simulate a slow query */
   slowStatus?: { status: string; ms: number };
-  /** API paths (without /api) that answer 500; prefix a method ("PATCH /me") to fail only that method */
+  /** API paths (without /api) that answer 500; prefix a method ("PATCH /users/me") to fail only that method */
   failPaths?: string[];
 }
 
@@ -76,7 +76,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     sessionEnded: false,
     /** Every Authorization header the app sent (it should send none: the session is a cookie). */
     authorizationHeaders: [] as string[],
-    /** How many times the app asked GET /me (the page-load session check). */
+    /** How many times the app asked GET /users/me (the page-load session check). */
     sessionChecks: 0,
   };
   let nextId = 100;
@@ -93,7 +93,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     const session = () => ({ user: state.user });
     const authorization = req.headers().authorization;
     if (authorization) state.authorizationHeaders.push(authorization);
-    if (path === "/me" && method === "GET") state.sessionChecks++;
+    if (path === "/users/me" && method === "GET") state.sessionChecks++;
 
     if (options.failPaths?.some((p) => p === path || p === `${method} ${path}`)) return reply(route, 500, { message: "Internal server error" });
     if (path === "/auth/logout") {
@@ -111,8 +111,8 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
       state.user = { id: "u-new", email: body.email, name: body.name, phone: body.phone ?? null, allergies: [], role: "USER" };
       return reply(route, 201, session());
     }
-    if (path === "/menu") return reply(route, 200, MENU.filter((m) => !url.searchParams.get("type") || m.type === url.searchParams.get("type")));
-    if (path === "/availability") {
+    if (path === "/public/menus") return reply(route, 200, MENU.filter((m) => !url.searchParams.get("type") || m.type === url.searchParams.get("type")));
+    if (path === "/public/availabilities") {
       const date = url.searchParams.get("date")!;
       const slots: Slot[] = Object.keys(SLOT_UTC).map((startTime) => ({
         startTime: startTime as Slot["startTime"],
@@ -127,16 +127,16 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
     if (!state.user) return reply(route, 401, { message: "Authentication required" });
     if (state.sessionEnded) return reply(route, 401, { message: "Invalid or expired token" });
 
-    if (path === "/me") {
+    if (path === "/users/me") {
       if (method === "PATCH") state.user = { ...state.user, ...body };
       return reply(route, 200, state.user);
     }
-    if (path === "/menu/recommendations") {
+    if (path === "/users/menus/recommendations") {
       const avoid = new Set(state.user.allergies);
       return reply(route, 200, MENU.filter((m) => !m.allergens.some((a) => avoid.has(a))).sort((a, b) => Number(b.chefPick) - Number(a.chefPick)));
     }
-    if (path === "/reservations" && method === "GET") return reply(route, 200, state.reservations);
-    if (path === "/reservations" && method === "POST") {
+    if (path === "/users/reservations" && method === "GET") return reply(route, 200, state.reservations);
+    if (path === "/users/reservations" && method === "POST") {
       state.created.push(body);
       if (body.startTime === options.rejectCapacityAt) return reply(route, 400, { message: "Insufficient capacity for the selected slot" });
       const tables = Math.ceil(body.partySize / (body.sector === "MAIN_HALL" ? 2 : 13));
@@ -153,7 +153,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
       state.reservations.unshift(reservation);
       return reply(route, 201, reservation);
     }
-    const one = /^\/reservations\/([^/]+)$/.exec(path);
+    const one = /^\/users\/reservations\/([^/]+)$/.exec(path);
     if (one) {
       const index = state.reservations.findIndex((r) => r.id === one[1]);
       if (index === -1) return reply(route, 404, { message: "Reservation not found" });
@@ -163,9 +163,9 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
       return reply(route, 200, state.reservations[index]);
     }
 
-    if (path.startsWith("/admin")) {
+    if (path.startsWith("/admins/")) {
       if (state.user.role !== "ADMIN") return reply(route, 403, { message: "Forbidden" });
-      if (path === "/admin/stats") {
+      if (path === "/admins/stats") {
         state.adminQueries.push(url.searchParams);
         return reply(route, 200, {
           date: url.searchParams.get("date"),
@@ -179,7 +179,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
           ],
         });
       }
-      if (path === "/admin/reservations") {
+      if (path === "/admins/reservations") {
         state.adminQueries.push(url.searchParams);
         if (options.slowStatus && url.searchParams.get("status") === options.slowStatus.status) {
           await new Promise((resolve) => setTimeout(resolve, options.slowStatus!.ms));
@@ -192,7 +192,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
         const pageSize = Number(url.searchParams.get("pageSize") ?? 20);
         return reply(route, 200, { items: matches.slice((page - 1) * pageSize, page * pageSize), total: matches.length, page, pageSize });
       }
-      if (path === "/admin/reservations/export") {
+      if (path === "/admins/reservations/export") {
         const format = url.searchParams.get("format") ?? "csv";
         return route.fulfill({
           status: 200,
@@ -201,7 +201,7 @@ export async function mockApi(page: Page, options: MockOptions = {}) {
           body: format === "csv" ? "code,status\n" : "[]",
         });
       }
-      const detail = /^\/admin\/reservations\/([^/]+)$/.exec(path);
+      const detail = /^\/admins\/reservations\/([^/]+)$/.exec(path);
       const row = detail && state.adminRows.find((r) => r.id === detail[1]);
       return row ? reply(route, 200, row) : reply(route, 404, { message: "Reservation not found" });
     }

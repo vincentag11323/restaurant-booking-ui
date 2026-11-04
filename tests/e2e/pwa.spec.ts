@@ -34,7 +34,7 @@ test.describe("installable app", () => {
 
 test("API calls that fail for lack of network say the guest is offline", async ({ page }) => {
   await mockApi(page, { signedInAs: GUEST });
-  await page.route("**/api/reservations", (route) => route.abort("internetdisconnected"));
+  await page.route("**/api/users/reservations", (route) => route.abort("internetdisconnected"));
   await page.goto("/bookings");
   await expect(page.getByRole("alert")).toHaveText("We couldn't load your bookings: You're offline. Check your connection and try again.");
 });
