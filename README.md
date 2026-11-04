@@ -12,7 +12,7 @@ Start the API first (see `../resortos-booking-api/README.md`), then:
 
 ```bash
 npm install
-npm run dev            # http://localhost:5173: /api → booking API :4000, /agent → assistant :4300
+npm run dev            # http://localhost:5173: /api → booking API :4000, /agents → assistant :4300
 ```
 
 Sign in as the seeded admin (`ADMIN_EMAIL` / `ADMIN_PASSWORD` from the API's `.env`) to see the admin pages, or create a guest account on `/register`.
@@ -30,7 +30,7 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mockApi.ts`), so t
 ## PWA
 
 * `vite-plugin-pwa` generates the manifest and service worker at build time (`npm run build`). Icons come from `public/favicon.svg` (a placeholder, see DESIGN.md).
-* The service worker precaches the app shell only. `/api` is never cached, so bookings and availability are always live. Without a network, the app still opens and API errors say the guest is offline.
+* The service worker precaches the app shell only. `/api` and `/agents` are never cached, so bookings and availability are always live. Without a network, the app still opens and API errors say the guest is offline.
 * Try it: `npm run build && npx vite preview`, open http://localhost:4173 in Chrome, then use Install. On iPhone, use Safari's Share → Add to Home Screen. Installing needs HTTPS in production (localhost is exempt).
 * The service worker is not active in `npm run dev`.
 
@@ -39,9 +39,9 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mockApi.ts`), so t
 | Path | What lives there |
 |---|---|
 | `src/types/` | This app's copy of the API types (kept separate from the backend on purpose) |
-| `src/backendApi/` | Calls to the booking API: `fetch` wrapper sending the HttpOnly session cookie; a 401 outside `/auth/` sends the guest to sign in (no refresh, no retry) |
-| `src/agentApi/` | Calls to the booking assistant (`/agent/chat`); no auth, the guest's email goes in each message |
-| `src/auth/` | Session context (on page load it asks `GET /me` who is signed in; the 1-hour session cookie is never extended) |
+| `src/backendApi/` | Calls to the booking API: `client.ts` is the `fetch` wrapper sending the HttpOnly session cookie (a 401 outside `/api/auth/` sends the guest to sign in, no refresh, no retry); one typed function per endpoint in `auth.ts`, `users.ts`, `reservations.ts`, `menus.ts`, `availabilities.ts`, `admins.ts` (paths `/api/public/*`, `/api/users/*`, `/api/admins/*`) |
+| `src/agentApi/` | Calls to the booking assistant (`POST /agents/users/chats`); no auth, the guest's email goes in each message |
+| `src/auth/` | Session context (on page load it asks `GET /api/users/me` who is signed in; the 1-hour session cookie is never extended) |
 | `src/pages/` | Guest screens (including `ChatPage` for the assistant); `src/pages/admin/` read-only admin screens |
 | `src/components/` | Layout, native `<dialog>` wrapper, small UI pieces |
 
@@ -56,4 +56,4 @@ The API's `CORS_ORIGIN` must match the site's origin, and both must be served ov
 ## Test build
 `npm run preview:test` builds and serves on :5190 against the test API (:4400) and assistant (:4500); used by `resortos-booking-e2e`.
 
-Naming: folders lowercase (kebab-case when multi-word), React components PascalCase, other files camelCase.
+Naming: folders and files camelCase, React components PascalCase, constants UPPER_SNAKE_CASE (`requirements/CODING_STANDARDS_REACT.md`).
