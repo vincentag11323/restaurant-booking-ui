@@ -5,7 +5,7 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const apiTarget = process.env.API_PROXY_TARGET ?? "http://localhost:4000";
 const agentTarget = process.env.AGENT_PROXY_TARGET ?? "http://localhost:4300";
-// /agent/chat → the assistant's POST /chat (src/agent-api).
+// /agent/chat → the assistant's POST /chat (src/agentApi).
 const agentProxy = { target: agentTarget, rewrite: (path: string) => path.replace(/^\/agent/, "") };
 
 export default defineConfig({

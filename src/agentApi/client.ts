@@ -1,4 +1,4 @@
-// Calls the booking assistant (resortos-booking-agent). Separate from src/backend-api on purpose:
+// Calls the booking assistant (resortos-booking-agent). Separate from src/backendApi on purpose:
 // no auth here, the guest's email travels with each message.
 import type { ChatMessage, ChatResponse, PendingBooking } from "../types/chat";
 

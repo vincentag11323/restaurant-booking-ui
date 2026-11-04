@@ -1,5 +1,5 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { api, json, setSessionExpiredHandler } from "../backend-api/client";
+import { api, json, setSessionExpiredHandler } from "../backendApi/client";
 import type { AuthResponse, User } from "../types/api";
 
 interface AuthState {

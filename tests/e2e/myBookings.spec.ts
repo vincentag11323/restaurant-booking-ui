@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { GUEST, inDays, makeReservation, mockApi, slotTimes } from "./mock-api";
+import { GUEST, inDays, makeReservation, mockApi, slotTimes } from "./mockApi";
 
 const upcoming = makeReservation({ id: "r-up", code: "RSV-UPC0M1", ...slotTimes(inDays(5), "19:30") });
 const past = makeReservation({ id: "r-past", code: "RSV-PAST22", status: "COMPLETED", ...slotTimes("2026-01-10", "11:00") });

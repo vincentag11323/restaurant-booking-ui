@@ -2,7 +2,7 @@ import { type FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/AuthContext";
 import { ErrorBanner, PageTitle } from "../components/ui";
-import { api, json } from "../backend-api/client";
+import { api, json } from "../backendApi/client";
 import type { User } from "../types/api";
 
 export function ProfilePage() {

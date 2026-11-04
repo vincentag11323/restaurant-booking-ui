@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { GUEST, mockApi } from "./mock-api";
+import { GUEST, mockApi } from "./mockApi";
 
 test.describe("installable app", () => {
   test.use({ serviceWorkers: "allow" });

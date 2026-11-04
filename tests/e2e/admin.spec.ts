@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { AdminReservation } from "../../src/types/api";
-import { ADMIN, GUEST, PASSWORD, inDays, makeReservation, mockApi, slotTimes } from "./mock-api";
+import { ADMIN, GUEST, PASSWORD, inDays, makeReservation, mockApi, slotTimes } from "./mockApi";
 
 const rows: AdminReservation[] = [
   {

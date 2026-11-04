@@ -25,7 +25,7 @@ npm test               # builds, serves the production build, runs the UI suite 
 npm run typecheck
 ```
 
-UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so they need no backend. The API's own suite verifies the real endpoints against the same spec. Service workers are blocked in tests except in `pwa.spec.ts`, which checks the manifest, icons, service worker and offline start.
+UI tests mock every `/api` call with `page.route` (`tests/e2e/mockApi.ts`), so they need no backend. The API's own suite verifies the real endpoints against the same spec. Service workers are blocked in tests except in `pwa.spec.ts`, which checks the manifest, icons, service worker and offline start.
 
 ## PWA
 
@@ -39,8 +39,8 @@ UI tests mock every `/api` call with `page.route` (`tests/e2e/mock-api.ts`), so 
 | Path | What lives there |
 |---|---|
 | `src/types/` | This app's copy of the API types (kept separate from the backend on purpose) |
-| `src/backend-api/` | Calls to the booking API: `fetch` wrapper sending the HttpOnly session cookie; a 401 outside `/auth/` sends the guest to sign in (no refresh, no retry) |
-| `src/agent-api/` | Calls to the booking assistant (`/agent/chat`); no auth, the guest's email goes in each message |
+| `src/backendApi/` | Calls to the booking API: `fetch` wrapper sending the HttpOnly session cookie; a 401 outside `/auth/` sends the guest to sign in (no refresh, no retry) |
+| `src/agentApi/` | Calls to the booking assistant (`/agent/chat`); no auth, the guest's email goes in each message |
 | `src/auth/` | Session context (on page load it asks `GET /me` who is signed in; the 1-hour session cookie is never extended) |
 | `src/pages/` | Guest screens (including `ChatPage` for the assistant); `src/pages/admin/` read-only admin screens |
 | `src/components/` | Layout, native `<dialog>` wrapper, small UI pieces |

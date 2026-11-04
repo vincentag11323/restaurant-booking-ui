@@ -1,5 +1,5 @@
 import { type FormEvent, useEffect, useRef, useState } from "react";
-import { sendChat, type Contact } from "../agent-api/client";
+import { sendChat, type Contact } from "../agentApi/client";
 import { ErrorBanner, PageTitle, PlaceCard } from "../components/ui";
 import type { ChatMessage, ChatResponse, PendingBooking } from "../types/chat";
 

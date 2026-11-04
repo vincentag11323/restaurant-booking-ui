@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { inDays, mockApi } from "./mock-api";
+import { inDays, mockApi } from "./mockApi";
 
 const draft = { branch: "BRANCH_1", sector: "MAIN_HALL", date: inDays(5), startTime: "19:30", partySize: 4 };
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { ErrorBanner, PageTitle } from "../../components/ui";
-import { api } from "../../backend-api/client";
+import { api } from "../../backendApi/client";
 import { BRANCH_LABEL, SECTOR_LABEL, localDateKey } from "../../lib/format";
 import type { Branch, Stats } from "../../types/api";
 

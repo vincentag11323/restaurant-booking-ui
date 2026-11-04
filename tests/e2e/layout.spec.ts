@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { AdminReservation } from "../../src/types/api";
-import { ADMIN, GUEST, makeReservation, mockApi } from "./mock-api";
+import { ADMIN, GUEST, makeReservation, mockApi } from "./mockApi";
 
 const row: AdminReservation = { ...makeReservation(), customer: { name: "Ayu Lestari", email: "ayu@example.com", phone: null } };
 

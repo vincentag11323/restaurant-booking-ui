@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { AdminReservation } from "../../src/types/api";
-import { ADMIN, GUEST, inDays, makeReservation, mockApi, slotTimes } from "./mock-api";
+import { ADMIN, GUEST, inDays, makeReservation, mockApi, slotTimes } from "./mockApi";
 
 const upcoming = makeReservation({ id: "r-up", code: "RSV-UPC0M1", ...slotTimes(inDays(5), "19:30") });
 

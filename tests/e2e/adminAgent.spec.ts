@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { AdminReservation } from "../../src/types/api";
-import { ADMIN, makeReservation, mockApi } from "./mock-api";
+import { ADMIN, makeReservation, mockApi } from "./mockApi";
 
 const viaAssistant: AdminReservation = {
   ...makeReservation({ id: "ai-1", code: "RSV-AIBOOK", source: "AGENT" }),
