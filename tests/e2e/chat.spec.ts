@@ -3,10 +3,10 @@ import { inDays, mockApi } from "./mockApi";
 
 const draft = { branch: "BRANCH_1", sector: "MAIN_HALL", date: inDays(5), startTime: "19:30", partySize: 4 };
 
-/** Fakes the assistant's POST /chat; each reply is taken in order. */
+/** Fakes the assistant's POST /agents/users/chats; each reply is taken in order. */
 async function mockAgent(page: Page, replies: { status?: number; body: unknown }[]) {
   const sent: Record<string, unknown>[] = [];
-  await page.route("**/agent/chat", async (route) => {
+  await page.route("**/agents/users/chats", async (route) => {
     sent.push(route.request().postDataJSON());
     const next = replies.shift() ?? { body: { reply: "…" } };
     await route.fulfill({ status: next.status ?? 200, contentType: "application/json", body: JSON.stringify(next.body) });
