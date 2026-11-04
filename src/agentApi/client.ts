@@ -2,7 +2,8 @@
 // no auth here, the guest's email travels with each message.
 import type { ChatMessage, ChatResponse, PendingBooking } from "../types/chat";
 
-const BASE = import.meta.env.VITE_AGENT_URL ?? "/agent";
+// Default is same origin: Vite proxies /agents to the assistant.
+const BASE = import.meta.env.VITE_AGENT_URL ?? "";
 
 export interface Contact {
   email: string;
@@ -21,7 +22,7 @@ export class AgentError extends Error {
 export async function sendChat(contact: Contact, messages: ChatMessage[], confirm?: PendingBooking): Promise<ChatResponse> {
   let res: Response;
   try {
-    res = await fetch(`${BASE}/chat`, {
+    res = await fetch(`${BASE}/agents/users/chats`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contact, messages, ...(confirm ? { confirm } : {}) }),

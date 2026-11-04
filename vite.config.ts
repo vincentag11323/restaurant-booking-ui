@@ -5,8 +5,6 @@ import { VitePWA } from "vite-plugin-pwa";
 
 const apiTarget = process.env.API_PROXY_TARGET ?? "http://localhost:4000";
 const agentTarget = process.env.AGENT_PROXY_TARGET ?? "http://localhost:4300";
-// /agent/chat → the assistant's POST /chat (src/agentApi).
-const agentProxy = { target: agentTarget, rewrite: (path: string) => path.replace(/^\/agent/, "") };
 
 export default defineConfig({
   plugins: [
@@ -30,12 +28,13 @@ export default defineConfig({
         // Cache the app shell only. Bookings and availability must always be live (PRD v1).
         globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
         navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/api\//, /^\/agent\//],
+        navigateFallbackDenylist: [/^\/api\//, /^\/agents\//],
       },
     }),
   ],
   // Same-origin /api so the session cookie works without CORS credentials juggling.
   // API_PROXY_TARGET lets the e2e run point the build at the test API (E2E_SPEC.md §2).
-  server: { proxy: { "/api": apiTarget, "/agent": agentProxy } },
-  preview: { proxy: { "/api": apiTarget, "/agent": agentProxy } },
+  // The assistant's routes all start with /agents (AGENT_SPEC.md §4.1), so they pass through unchanged.
+  server: { proxy: { "/api": apiTarget, "/agents": agentTarget } },
+  preview: { proxy: { "/api": apiTarget, "/agents": agentTarget } },
 });

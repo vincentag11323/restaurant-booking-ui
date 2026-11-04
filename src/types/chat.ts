@@ -1,4 +1,4 @@
-// This app's copy of the booking assistant's POST /chat shapes (resortos-booking-agent/src/types/chat.ts).
+// This app's copy of the booking assistant's POST /agents/users/chats shapes (resortos-booking-agent/src/types/chat.ts).
 import type { Branch, Sector, SlotStartTime } from "./api";
 
 export interface ChatMessage {
