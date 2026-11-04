@@ -56,4 +56,4 @@ The API's `CORS_ORIGIN` must match the site's origin, and both must be served ov
 ## Test build
 `npm run preview:test` builds and serves on :5190 against the test API (:4400) and assistant (:4500); used by `resortos-booking-e2e`.
 
-Naming: folders and files camelCase, React components PascalCase, constants UPPER_SNAKE_CASE (`requirements/CODING_STANDARDS_REACT.md`).
+Naming: folders and files camelCase, React components PascalCase, constants UPPER_SNAKE_CASE (`../requirements/CODING_STANDARDS_REACT.md`).
